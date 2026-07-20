@@ -1,6 +1,6 @@
 # Crate — Self-Hosted Music Streaming Server
 
-A lightweight, self-hostable music streaming server. Single binary, SQLite, runs on a Raspberry Pi.
+A lightweight, self-hostable music streaming server. Single binary, SQLite,Desktop-first, can run on a Raspberry Pi.
 
 ## Features
 
