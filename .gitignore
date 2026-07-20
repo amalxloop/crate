@@ -1,0 +1,6 @@
+crate
+crate-test
+*.db
+*.db-wal
+*.db-shm
+~/
