@@ -24,7 +24,7 @@ A lightweight, self-hostable music streaming server. Single binary, SQLite,Deskt
 
 ## Quick Start
 
-### Docker (recommended)
+### Docker (recommended) Fork First
 
 ```bash
 git clone https://github.com/youruser/crate.git
