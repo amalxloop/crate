@@ -339,7 +339,7 @@ img{-webkit-user-drag:none;user-select:none}
   .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:998;-webkit-tap-highlight-color:transparent}
   .sidebar.open~.sidebar-overlay{display:block}
   .main{margin-left:0!important}
-  .main-scroll{padding:8px 10px!important;padding-top:env(safe-area-inset-top,8px)!important;padding-bottom:calc(56px + env(safe-area-inset-bottom,12px))!important;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .main-scroll{padding:8px 10px!important;padding-top:env(safe-area-inset-top,8px)!important;padding-bottom:calc(90px + env(safe-area-inset-bottom,12px))!important;overflow-y:auto;-webkit-overflow-scrolling:touch}
   .topbar{padding:6px 10px!important;padding-top:calc(6px + env(safe-area-inset-top,0px))!important;gap:6px}
   .topbar-right{gap:4px}
   .btn-menu{display:flex!important;min-width:36px;min-height:36px;align-items:center;justify-content:center}
@@ -400,24 +400,27 @@ img{-webkit-user-drag:none;user-select:none}
   .btn-primary{padding:6px 16px!important;font-size:11px!important;border-radius:18px!important;min-height:34px!important}
   .btn-secondary{padding:6px 14px!important;font-size:11px!important;border-radius:18px!important;min-height:34px!important}
 
-  /* Player bar */
-  .player-bar{padding:0 8px!important;height:52px!important;padding-bottom:env(safe-area-inset-bottom,0px)!important;border-top:1px solid var(--border)}
-  .player-left{width:auto!important;flex:1!important;min-width:0!important;gap:6px!important}
-  .player-cover{width:36px!important;height:36px!important;border-radius:4px!important}
-  .player-track-title{font-size:11px!important;font-weight:600}
+  /* Player bar — Spotify mobile style */
+  .player-bar{height:auto!important;padding:0!important;padding-bottom:env(safe-area-inset-bottom,0px)!important;border-top:1px solid var(--border);flex-direction:column;align-items:stretch}
+  .player-progress{width:100%!important;padding:0!important;gap:0!important;position:absolute;top:-2px;left:0;right:0}
+  .player-progress .progress-bar{height:2px!important;border-radius:0!important}
+  .player-progress .progress-bar:hover{height:2px!important}
+  .player-progress .player-time{display:none!important}
+  .player-left{display:flex!important;align-items:center!important;gap:8px!important;padding:8px 10px 4px!important;width:100%!important;flex:none!important;min-width:0!important}
+  .player-cover{width:40px!important;height:40px!important;border-radius:4px!important;flex-shrink:0}
+  .player-track-info{flex:1!important;min-width:0!important;text-align:left}
+  .player-track-title{font-size:12px!important;font-weight:600}
   .player-track-artist{font-size:10px!important}
-  .player-center{flex:1!important;max-width:none!important}
-  .player-controls{gap:2px!important}
-  .player-btn{width:28px!important;height:28px!important;min-width:28px!important;min-height:28px!important}
-  .player-btn svg{width:14px!important;height:14px!important}
-  .player-btn-main{width:32px!important;height:32px!important;min-width:32px!important;min-height:32px!important}
-  .player-btn-main svg{width:16px!important;height:16px!important}
+  .player-center{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;padding:2px 10px 6px!important;flex:none!important;max-width:none!important;gap:0!important}
+  .player-controls{gap:8px!important;align-items:center}
+  .player-btn{width:32px!important;height:32px!important;min-width:32px!important;min-height:32px!important}
+  .player-btn svg{width:16px!important;height:16px!important}
+  .player-btn-main{width:36px!important;height:36px!important;min-width:36px!important;min-height:36px!important}
+  .player-btn-main svg{width:18px!important;height:18px!important}
+  .player-like-btn{min-width:32px!important;min-height:32px!important}
   .player-right{display:none!important}
-  .player-progress{gap:4px!important}
   .player-time{font-size:9px!important;min-width:24px!important}
-  .progress-bar{height:3px!important}
-  .progress-bar:hover{height:3px!important}
-  .progress-thumb{opacity:1!important;width:12px!important;height:12px!important}
+  .progress-thumb{opacity:1!important;width:10px!important;height:10px!important}
 
   /* Queue panel */
   .queue-panel{width:100%!important}
