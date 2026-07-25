@@ -10,7 +10,9 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>Crate</title>
-<link rel="manifest" href="data:application/json,">
+<link rel="icon" type="image/svg+xml" href="/static/logo.svg">
+<link rel="apple-touch-icon" href="/static/logo.svg">
+<link rel="manifest" href="/manifest.json">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -38,6 +40,14 @@ input,select,textarea{font-family:var(--font);font-size:inherit}
 *{scrollbar-width:thin;scrollbar-color:var(--text-muted) transparent}
 ::selection{background:var(--accent-dim);color:var(--text)}
 
+/* Touch / mobile globals */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
+body{overscroll-behavior-y:contain}
+.main-scroll,.sidebar-nav{-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain}
+button,input,select,textarea{-webkit-touch-callout:none}
+img{-webkit-user-drag:none;user-select:none}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
 .app{display:flex;flex:1;overflow:hidden;position:relative}
 
 /* ── Sidebar ── */
@@ -45,8 +55,7 @@ input,select,textarea{font-family:var(--font);font-size:inherit}
   display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;
   transition:transform .25s ease}
 .sidebar-header{padding:20px 20px 12px;display:flex;align-items:center;gap:10px}
-.sidebar-logo{width:32px;height:32px;background:var(--accent);border-radius:var(--radius);
-  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;color:#fff}
+.sidebar-logo-img{width:32px;height:32px;border-radius:var(--radius);flex-shrink:0}
 .sidebar-title{font-size:18px;font-weight:700;letter-spacing:-.3px}
 .sidebar-nav{flex:1;overflow-y:auto;padding:4px 8px}
 .nav-section{margin-bottom:16px}
@@ -235,8 +244,7 @@ input,select,textarea{font-family:var(--font);font-size:inherit}
 .login-card{background:var(--bg-card);border-radius:var(--radius-lg);padding:40px;width:100%;
   max-width:380px;box-shadow:var(--shadow-lg)}
 .login-logo{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:8px}
-.login-logo-box{width:40px;height:40px;background:var(--accent);border-radius:var(--radius);
-  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:22px;color:#fff}
+.login-logo-img{width:40px;height:40px;border-radius:var(--radius)}
 .login-logo-text{font-size:28px;font-weight:800;letter-spacing:-.5px}
 .login-subtitle{text-align:center;color:var(--text-secondary);margin-bottom:28px;font-size:14px}
 .form-group{margin-bottom:16px}
@@ -326,35 +334,107 @@ input,select,textarea{font-family:var(--font);font-size:inherit}
 
 /* ── Mobile ── */
 @media(max-width:768px){
-  .sidebar{transform:translateX(-100%)}
+  .sidebar{transform:translateX(-100%);z-index:999}
   .sidebar.open{transform:translateX(0)}
+  .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:998;-webkit-tap-highlight-color:transparent}
+  .sidebar.open~.sidebar-overlay{display:block}
   .main{margin-left:0}
-  .main-scroll{padding:16px}
-  .topbar{padding:12px 16px}
-  .btn-menu{display:flex}
-  .detail-hero{flex-direction:column;align-items:center;text-align:center}
-  .detail-cover{width:180px;height:180px}
-  .detail-title{font-size:28px}
-  .detail-meta{justify-content:center}
-  .detail-actions{justify-content:center}
-  .player-left{width:auto;flex:1}
+  .main-scroll{padding:16px;padding-top:env(safe-area-inset-top,16px);padding-bottom:env(safe-area-inset-bottom,16px)}
+  .topbar{padding:12px 16px;padding-top:calc(12px + env(safe-area-inset-top,0px))}
+  .btn-menu{display:flex;min-width:44px;min-height:44px;align-items:center;justify-content:center}
+  .detail-hero{flex-direction:column;align-items:center;text-align:center;gap:16px}
+  .detail-cover{width:min(180px,60vw);height:min(180px,60vw)}
+  .detail-title{font-size:26px}
+  .detail-meta{justify-content:center;font-size:12px}
+  .detail-actions{justify-content:center;flex-wrap:wrap;gap:8px}
+  .detail-actions .btn-primary,.detail-actions .btn-secondary{min-height:44px;padding:10px 20px;font-size:13px}
+  .player-left{width:auto;flex:1;min-width:0}
   .player-right{display:none}
   .player-center{flex:1;max-width:none}
-  .card-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
+  .player-bar{padding:0 12px;padding-bottom:env(safe-area-inset-bottom,0px);height:auto;min-height:var(--player-h);align-items:center}
+  .player-controls{gap:12px}
+  .player-btn{min-width:44px;min-height:44px}
+  .player-btn-main{min-width:48px;min-height:48px}
+  .player-progress{padding:0 4px}
+  .progress-bar{height:6px;min-height:6px}
+  .progress-bar:hover{height:6px}
+  .progress-thumb{width:16px;height:16px;opacity:1}
+  .card-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px}
+  .card{padding:10px}
+  .card-play{opacity:1;transform:translateY(0);width:36px;height:36px}
+  .card-play svg{width:16px;height:16px}
+  .card-title{font-size:12px}
+  .card-subtitle{font-size:11px}
+  .track-row{padding:10px 12px;gap:10px;min-height:56px}
+  .track-cover-sm{width:44px;height:44px}
+  .track-title{font-size:13px}
   .track-album{display:none}
-  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .track-duration{font-size:12px}
+  .track-actions{opacity:1}
+  .track-action-btn{min-width:40px;min-height:40px}
+  .stats-row{grid-template-columns:repeat(2,1fr);gap:8px}
+  .stat-card{padding:16px}
+  .stat-value{font-size:22px}
   .queue-panel{width:100%}
   .search-bar{max-width:none}
-  .player-bar{padding:0 12px}
+  .search-bar input{min-height:44px;font-size:16px}
+  .form-input{min-height:44px;font-size:16px}
+  .btn-login{min-height:48px;font-size:16px}
+  .login-card{padding:28px 20px}
+  .login-logo-text{font-size:24px}
+  .sidebar-nav{padding:8px}
+  .nav-link{min-height:44px;padding:10px 14px;font-size:14px}
 }
 @media(max-width:480px){
   .card-grid{grid-template-columns:repeat(2,1fr);gap:8px}
-  .card{padding:10px}
-  .stat-value{font-size:22px}
+  .card{padding:8px}
+  .card-cover{margin-bottom:8px}
+  .stat-value{font-size:20px}
+  .stat-label{font-size:11px}
+  .detail-cover{width:min(160px,55vw);height:min(160px,55vw)}
+  .detail-title{font-size:22px}
+  .player-cover{width:44px;height:44px}
+  .player-track-title{font-size:12px}
+  .player-track-artist{font-size:11px}
+  .player-btn-main{min-width:44px;min-height:44px}
+  .section-title{font-size:18px}
 }
 @media(min-width:769px) and (max-width:1024px){
   .card-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
 }
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:0.01ms!important;transition-duration:0.01ms!important}
+}
+@media(hover:none) and (pointer:coarse){
+  .card-play{opacity:1;transform:translateY(0)}
+  .track-actions{opacity:1}
+  .progress-thumb{opacity:1;width:16px;height:16px}
+  .btn-menu:active,.nav-link:active,.card:active,.track-row:active{opacity:.7}
+}
+
+/* ── Mobile fullscreen player ── */
+.mobile-fullscreen{display:none;position:fixed;inset:0;z-index:300;background:var(--bg);
+  flex-direction:column;padding:env(safe-area-inset-top,16px) env(safe-area-inset-right,16px) env(safe-area-inset-bottom,16px);overflow-y:auto}
+.mobile-fullscreen.open{display:flex}
+.mfs-header{display:flex;align-items:center;justify-content:space-between;padding:8px 4px}
+.mfs-header button{min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;color:var(--text-secondary)}
+.mfs-cover{width:min(75vw,320px);height:min(75vw,320px);margin:8px auto 24px;border-radius:var(--radius-lg);
+  overflow:hidden;box-shadow:0 16px 48px rgba(0,0,0,.5);background:var(--bg-elevated)}
+.mfs-cover img{width:100%;height:100%;object-fit:cover}
+.mfs-info{text-align:center;padding:0 20px;margin-bottom:20px}
+.mfs-title{font-size:20px;font-weight:700;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mfs-artist{font-size:14px;color:var(--text-secondary)}
+.mfs-progress{padding:0 20px;margin-bottom:8px}
+.mfs-progress .progress-bar{height:6px}
+.mfs-times{display:flex;justify-content:space-between;padding:0 20px;margin-bottom:20px}
+.mfs-times .player-time{font-size:12px;color:var(--text-muted)}
+.mfs-controls{display:flex;align-items:center;justify-content:center;gap:24px;padding:0 20px}
+.mfs-controls .player-btn{min-width:48px;min-height:48px}
+.mfs-controls .player-btn svg{width:24px;height:24px}
+.mfs-controls .player-btn-main{min-width:56px;min-height:56px}
+.mfs-controls .player-btn-main svg{width:28px;height:28px}
+.mfs-extras{display:flex;align-items:center;justify-content:center;gap:32px;padding:24px 20px}
+.mfs-extras .player-btn{min-width:44px;min-height:44px}
 
 /* ── Misc ── */
 .text-accent{color:var(--accent)}
@@ -376,7 +456,7 @@ input,select,textarea{font-family:var(--font);font-size:inherit}
 <div id="login-page" class="login-page">
   <div class="login-card">
     <div class="login-logo">
-      <div class="login-logo-box">C</div>
+      <img class="login-logo-img" src="/static/logo.svg" alt="Crate" width="40" height="40">
       <div class="login-logo-text">Crate</div>
     </div>
     <p class="login-subtitle">Self-hosted music player</p>
@@ -401,7 +481,7 @@ input,select,textarea{font-family:var(--font);font-size:inherit}
   <!-- Sidebar -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
-      <div class="sidebar-logo">C</div>
+      <img class="sidebar-logo-img" src="/static/logo.svg" alt="Crate" width="32" height="32">
       <div class="sidebar-title">Crate</div>
     </div>
     <nav class="sidebar-nav">
@@ -469,6 +549,7 @@ input,select,textarea{font-family:var(--font);font-size:inherit}
       </div>
     </div>
   </aside>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
   <!-- Queue panel -->
   <div class="queue-overlay" id="queue-overlay"></div>
@@ -689,6 +770,57 @@ input,select,textarea{font-family:var(--font);font-size:inherit}
           <div class="volume-fill" id="volume-fill" style="width:80%"></div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- Mobile fullscreen player -->
+  <div class="mobile-fullscreen" id="mobile-fullscreen">
+    <div class="mfs-header">
+      <button id="mfs-close">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <span style="font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Now Playing</span>
+      <button id="mfs-queue" title="Queue">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="mfs-cover" id="mfs-cover"><div class="card-cover-placeholder" style="width:100%;height:100%"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg></div></div>
+    <div class="mfs-info">
+      <div class="mfs-title" id="mfs-title">No track</div>
+      <div class="mfs-artist" id="mfs-artist">-</div>
+    </div>
+    <div class="mfs-progress">
+      <div class="progress-bar" id="mfs-progress-bar">
+        <div class="progress-fill" id="mfs-progress-fill" style="width:0%"><div class="progress-thumb"></div></div>
+        <div class="progress-buffered" id="mfs-progress-buffered" style="width:0%"></div>
+      </div>
+    </div>
+    <div class="mfs-times">
+      <span class="player-time" id="mfs-current-time">0:00</span>
+      <span class="player-time" id="mfs-total-time">0:00</span>
+    </div>
+    <div class="mfs-controls">
+      <button class="player-btn" id="mfs-shuffle" title="Shuffle">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+      </button>
+      <button class="player-btn" id="mfs-prev" title="Previous">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+      </button>
+      <button class="player-btn player-btn-main" id="mfs-play" title="Play/Pause">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" id="mfs-icon-play"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" id="mfs-icon-pause" class="hidden"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+      </button>
+      <button class="player-btn" id="mfs-next" title="Next">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M16 18h2V6h-2zM6 18l8.5-6L6 6z"/></svg>
+      </button>
+      <button class="player-btn" id="mfs-repeat" title="Repeat">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+      </button>
+    </div>
+    <div class="mfs-extras">
+      <button class="player-like-btn" id="mfs-like" title="Like">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </button>
     </div>
   </div>
 
@@ -1426,6 +1558,7 @@ function updatePlayerUI(track) {
   $("#player-artist").textContent = artist;
   $("#player-cover").innerHTML = `<img src="${coverUrl(track.id)}" alt="" onerror="this.parentElement.innerHTML='<div class=card-cover-placeholder><svg width=20 height=20 viewBox=&quot;0 0 24 24&quot; fill=none stroke=currentColor stroke-width=2><circle cx=12 cy=12 r=10/><circle cx=12 cy=12 r=3/></svg></div>'">`;
   document.title = `${track.title} - ${artist} | Crate`;
+  if ($("#mobile-fullscreen").classList.contains("open")) syncFullscreen();
 
   // Update like button
   const likeBtn = $("#player-like");
@@ -1646,6 +1779,26 @@ function closeSidebar() {
   $("#sidebar").classList.remove("open");
 }
 
+/* Swipe-to-close sidebar on touch */
+(function(){
+  let startX = 0, dx = 0, tracking = false;
+  const sidebar = () => $("#sidebar");
+  document.addEventListener("touchstart", e => {
+    if (sidebar().classList.contains("open")) {
+      startX = e.touches[0].clientX;
+      if (startX < 30) tracking = true;
+    }
+  }, {passive:true});
+  document.addEventListener("touchmove", e => {
+    if (!tracking) return;
+    dx = e.touches[0].clientX - startX;
+  }, {passive:true});
+  document.addEventListener("touchend", () => {
+    if (tracking && dx > 60) closeSidebar();
+    tracking = false; dx = 0;
+  });
+})();
+
 function toggleQueue() {
   const panel = $("#queue-panel");
   const overlay = $("#queue-overlay");
@@ -1816,6 +1969,8 @@ $("#login-form").addEventListener("submit", e => {
 $("#btn-menu").addEventListener("click", () => {
   $("#sidebar").classList.toggle("open");
 });
+
+$("#sidebar-overlay").addEventListener("click", closeSidebar);
 
 $("#sidebar").addEventListener("click", e => {
   if (e.target === e.currentTarget) closeSidebar();
@@ -2069,23 +2224,29 @@ $("#player-volume-btn").addEventListener("click", () => {
 });
 
 /* ── Like button ── */
-$("#player-like").addEventListener("click", async () => {
-  if (!state.currentTrack) return;
+async function toggleFavorite(trackId) {
   const btn = $("#player-like");
+  const mfsBtn = $("#mfs-like");
+  if (!btn) return;
   const isLiked = btn.classList.contains("liked");
   try {
     if (isLiked) {
-      await api(`/api/favorites/${state.currentTrack.id}`, { method: "DELETE" });
+      await api(`/api/favorites/${trackId}`, { method: "DELETE" });
       btn.classList.remove("liked");
       btn.querySelector("svg").setAttribute("fill", "none");
+      if (mfsBtn) { mfsBtn.classList.remove("liked"); mfsBtn.querySelector("svg").setAttribute("fill", "none"); }
       toast("Removed from favorites");
     } else {
-      await api(`/api/favorites/${state.currentTrack.id}`, { method: "POST" });
+      await api(`/api/favorites/${trackId}`, { method: "POST" });
       btn.classList.add("liked");
       btn.querySelector("svg").setAttribute("fill", "currentColor");
+      if (mfsBtn) { mfsBtn.classList.add("liked"); mfsBtn.querySelector("svg").setAttribute("fill", "currentColor"); }
       toast("Added to favorites");
     }
   } catch (e) {}
+}
+$("#player-like").addEventListener("click", () => {
+  if (state.currentTrack) toggleFavorite(state.currentTrack.id);
 });
 
 /* ── Player cover/artist click navigation ── */
@@ -2098,6 +2259,87 @@ $("#player-title").addEventListener("click", () => {
 $("#player-artist").addEventListener("click", () => {
   if (state.currentTrack && state.currentTrack.artist_id) navigate(`#/artist/${state.currentTrack.artist_id}`);
 });
+
+/* ── Mobile fullscreen player ── */
+function openFullscreen() {
+  if (!state.currentTrack) return;
+  $("#mobile-fullscreen").classList.add("open");
+  syncFullscreen();
+  document.body.style.overflow = "hidden";
+}
+function closeFullscreen() {
+  $("#mobile-fullscreen").classList.remove("open");
+  document.body.style.overflow = "";
+}
+function syncFullscreen() {
+  const t = state.currentTrack;
+  if (!t) return;
+  const artist = t.artist || t.artist_name || "Unknown";
+  $("#mfs-title").textContent = t.title || "Unknown";
+  $("#mfs-artist").textContent = artist;
+  $("#mfs-cover").innerHTML = `<img src="${coverUrl(t.id)}" alt="" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.innerHTML='<div class=card-cover-placeholder style=width:100%;height:100%><svg width=48 height=48 viewBox=&quot;0 0 24 24&quot; fill=none stroke=currentColor stroke-width=2><circle cx=12 cy=12 r=10/><circle cx=12 cy=12 r=3/></svg></div>'">`;
+  // Sync like state
+  const likeBtn = $("#mfs-like");
+  if (likeBtn && $("#player-like")) {
+    const isLiked = $("#player-like").classList.contains("liked");
+    likeBtn.classList.toggle("liked", isLiked);
+    likeBtn.querySelector("svg").setAttribute("fill", isLiked ? "currentColor" : "none");
+  }
+  // Sync play/pause icon
+  updateMfsPlayIcon();
+}
+function updateMfsPlayIcon() {
+  const playing = !audio.paused;
+  $("#mfs-icon-play").classList.toggle("hidden", playing);
+  $("#mfs-icon-pause").classList.toggle("hidden", !playing);
+}
+$("#player-cover").addEventListener("click", e => {
+  if (window.innerWidth <= 768) { e.preventDefault(); e.stopPropagation(); openFullscreen(); }
+});
+$("#mfs-close").addEventListener("click", closeFullscreen);
+$("#mfs-play").addEventListener("click", togglePlay);
+$("#mfs-prev").addEventListener("click", playPrev);
+$("#mfs-next").addEventListener("click", playNext);
+$("#mfs-like").addEventListener("click", () => { if (state.currentTrack) toggleFavorite(state.currentTrack.id); });
+$("#mfs-shuffle").addEventListener("click", () => { $("#player-shuffle").click(); syncMfsShuffle(); });
+$("#mfs-repeat").addEventListener("click", () => { $("#player-repeat").click(); syncMfsRepeat(); });
+$("#mfs-queue").addEventListener("click", () => { closeFullscreen(); toggleQueue(); });
+function syncMfsShuffle() {
+  $("#mfs-shuffle").classList.toggle("active", $("#player-shuffle").classList.contains("active"));
+}
+function syncMfsRepeat() {
+  const rep = $("#player-repeat");
+  $("#mfs-repeat").classList.toggle("active", rep.classList.contains("active"));
+  $("#mfs-repeat").classList.toggle("repeat-one", rep.classList.contains("repeat-one"));
+}
+
+/* Sync fullscreen progress */
+audio.addEventListener("timeupdate", () => {
+  if (!$("#mobile-fullscreen").classList.contains("open")) return;
+  const pct = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
+  $("#mfs-progress-fill").style.width = pct + "%";
+  $("#mfs-current-time").textContent = formatDuration(audio.currentTime);
+  $("#mfs-total-time").textContent = formatDuration(audio.duration);
+});
+audio.addEventListener("play", updateMfsPlayIcon);
+audio.addEventListener("pause", updateMfsPlayIcon);
+
+/* MFS progress bar seeking */
+(function(){
+  const bar = $("#mfs-progress-bar");
+  if (!bar) return;
+  function seekFromEvent(e) {
+    const rect = bar.getBoundingClientRect();
+    const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+    const pct = Math.max(0, Math.min(1, x / rect.width));
+    if (audio.duration) audio.currentTime = pct * audio.duration;
+  }
+  let seeking = false;
+  bar.addEventListener("touchstart", e => { seeking = true; seekFromEvent(e); }, {passive:true});
+  bar.addEventListener("touchmove", e => { if (seeking) seekFromEvent(e); }, {passive:true});
+  bar.addEventListener("touchend", () => { seeking = false; });
+  bar.addEventListener("click", seekFromEvent);
+})();
 
 /* ── Keyboard shortcuts ── */
 document.addEventListener("keydown", e => {

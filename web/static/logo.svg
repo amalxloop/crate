@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="wood" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#8B6914"/>
+      <stop offset="100%" stop-color="#6B4F12"/>
+    </linearGradient>
+    <linearGradient id="woodDark" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#6B4F12"/>
+      <stop offset="100%" stop-color="#4A3509"/>
+    </linearGradient>
+  </defs>
+  <!-- Crate body -->
+  <rect x="8" y="16" width="48" height="40" rx="3" fill="url(#wood)" stroke="#4A3509" stroke-width="2"/>
+  <!-- Crate planks -->
+  <line x1="8" y1="28" x2="56" y2="28" stroke="#4A3509" stroke-width="1.5"/>
+  <line x1="8" y1="40" x2="56" y2="40" stroke="#4A3509" stroke-width="1.5"/>
+  <!-- Corner nails -->
+  <circle cx="13" cy="21" r="1.8" fill="#C0A030" stroke="#8B6914" stroke-width="0.5"/>
+  <circle cx="51" cy="21" r="1.8" fill="#C0A030" stroke="#8B6914" stroke-width="0.5"/>
+  <circle cx="13" cy="51" r="1.8" fill="#C0A030" stroke="#8B6914" stroke-width="0.5"/>
+  <circle cx="51" cy="51" r="1.8" fill="#C0A030" stroke="#8B6914" stroke-width="0.5"/>
+  <!-- Side slats -->
+  <line x1="8" y1="16" x2="8" y2="56" stroke="#5A4210" stroke-width="3"/>
+  <line x1="56" y1="16" x2="56" y2="56" stroke="#5A4210" stroke-width="3"/>
+  <!-- Pirate skull crossbones (small, on top-right corner) -->
+  <circle cx="46" cy="22" r="4.5" fill="#F5F0E0" stroke="#4A3509" stroke-width="0.8"/>
+  <circle cx="44.2" cy="21" r="1" fill="#4A3509"/>
+  <circle cx="47.8" cy="21" r="1" fill="#4A3509"/>
+  <path d="M44.5 23.5 Q46 25 47.5 23.5" fill="none" stroke="#4A3509" stroke-width="0.7"/>
+  <line x1="42" y1="25" x2="50" y2="19.5" stroke="#F5F0E0" stroke-width="1" stroke-linecap="round"/>
+  <line x1="50" y1="25" x2="42" y2="19.5" stroke="#F5F0E0" stroke-width="1" stroke-linecap="round"/>
+  <!-- Musical C with note head -->
+  <text x="32" y="46" text-anchor="middle" font-family="Georgia, serif" font-weight="900" font-size="30" fill="#F5F0E0" stroke="#4A3509" stroke-width="1.5">C</text>
+  <!-- Music note dot inside the C curve -->
+  <circle cx="27" cy="43" r="2.5" fill="#C0A030" stroke="#8B6914" stroke-width="0.5"/>
+  <!-- Small music note stem -->
+  <line x1="29.5" y1="43" x2="29.5" y2="36" stroke="#C0A030" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- Music note flag -->
+  <path d="M29.5 36 Q33 37.5 29.5 39" fill="#C0A030"/>
+</svg>
