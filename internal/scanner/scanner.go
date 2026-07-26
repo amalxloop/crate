@@ -529,12 +529,14 @@ func (s *Scanner) extractCoverArt(filePath string, data []byte) (string, error) 
 		return "", fmt.Errorf("rename cover art: %w", err)
 	}
 
-	s.squareCropCover(coverPath)
+	s.normalizeCover(coverPath)
 
 	return coverPath, nil
 }
 
-func (s *Scanner) squareCropCover(coverPath string) {
+const maxCoverSize = 300
+
+func (s *Scanner) normalizeCover(coverPath string) {
 	probe := exec.Command("ffprobe", "-v", "error", "-select_streams", "v:0",
 		"-show_entries", "stream=width,height", "-of", "csv=p=0", coverPath)
 	out, err := probe.Output()
@@ -543,13 +545,23 @@ func (s *Scanner) squareCropCover(coverPath string) {
 	}
 
 	var w, h int
-	if _, err := fmt.Sscanf(string(out), "%d,%d", &w, &h); err != nil || w == h {
+	if _, err := fmt.Sscanf(string(out), "%d,%d", &w, &h); err != nil {
 		return
 	}
 
-	tmpOut := coverPath + ".sq.jpg"
-	cmd := exec.Command("ffmpeg", "-y", "-i", coverPath,
-		"-vf", fmt.Sprintf("crop=min(iw\\,ih):min(iw\\,ih)"), tmpOut)
+	needsCrop := w != h
+	needsResize := w > maxCoverSize || h > maxCoverSize
+	if !needsCrop && !needsResize {
+		return
+	}
+
+	vf := fmt.Sprintf("scale=%d:%d", maxCoverSize, maxCoverSize)
+	if needsCrop {
+		vf = fmt.Sprintf("crop=min(iw\\,ih):min(iw\\,ih),scale=%d:%d", maxCoverSize, maxCoverSize)
+	}
+
+	tmpOut := coverPath + ".norm.jpg"
+	cmd := exec.Command("ffmpeg", "-y", "-i", coverPath, "-vf", vf, "-q:v", "4", "-update", "1", tmpOut)
 	if err := cmd.Run(); err != nil {
 		os.Remove(tmpOut)
 		return
