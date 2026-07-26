@@ -512,13 +512,8 @@ func (s *Scanner) extractCoverArt(filePath string, data []byte) (string, error) 
 		return "", fmt.Errorf("create cover dir: %w", err)
 	}
 
-	ext := ".jpg"
-	if len(data) > 3 && data[0] == 0x89 && data[1] == 0x50 {
-		ext = ".png"
-	}
-
 	hash := fmt.Sprintf("%x", md5.Sum([]byte(filePath)))
-	coverPath := filepath.Join(s.coverDir, hash+ext)
+	coverPath := filepath.Join(s.coverDir, hash+".jpg")
 
 	if _, err := os.Stat(coverPath); err == nil {
 		return coverPath, nil
@@ -534,7 +529,32 @@ func (s *Scanner) extractCoverArt(filePath string, data []byte) (string, error) 
 		return "", fmt.Errorf("rename cover art: %w", err)
 	}
 
+	s.squareCropCover(coverPath)
+
 	return coverPath, nil
+}
+
+func (s *Scanner) squareCropCover(coverPath string) {
+	probe := exec.Command("ffprobe", "-v", "error", "-select_streams", "v:0",
+		"-show_entries", "stream=width,height", "-of", "csv=p=0", coverPath)
+	out, err := probe.Output()
+	if err != nil {
+		return
+	}
+
+	var w, h int
+	if _, err := fmt.Sscanf(string(out), "%d,%d", &w, &h); err != nil || w == h {
+		return
+	}
+
+	tmpOut := coverPath + ".sq.jpg"
+	cmd := exec.Command("ffmpeg", "-y", "-i", coverPath,
+		"-vf", fmt.Sprintf("crop=min(iw\\,ih):min(iw\\,ih)"), tmpOut)
+	if err := cmd.Run(); err != nil {
+		os.Remove(tmpOut)
+		return
+	}
+	os.Rename(tmpOut, coverPath)
 }
 
 func (s *Scanner) SetCoverDir(dir string) {
